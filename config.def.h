@@ -69,14 +69,14 @@ static const char unknown_str[] = "n/a";
 #include "slstatus.h"
 
 static const struct arg args[] = {
-	/* function				format          				argument            interval */	
-	{ netspeed_auto, 		"^c#89B4FA^%s^d^",      		NULL,               1000 },
-	{ separator,     		"^c#444444^%s^d^",         		" | ",    			0 },
-	{ cpu_perc,     		"^c#F38BA8^CPU %s%% ", 			NULL, 				2000 },
-	{ ram_used,    			"RAM %s^d^", 					"1000", 			2000 },
-	{ separator,     		"^c#444444^%s^d^",         		" | ",    			0 },
-	{ gpu_combined, 		"^c#94E2D5^%s^d^", 				NULL, 				3000 },
-	{ separator,     		"^c#444444^%s^d^",         		" | ",    			0 },
-	{ datetime,    			"^c#FFFFFF^%s^d^", 				"%m-%d %H:%M", 		5000 },
-	{ separator,     		"^c#444444^%s^d^",         		" | ",    			0 },
+	/* function				format          				argument            interval */
+	{ netspeed_auto, 		"^c#88C0D0^%s^d^",      		NULL,               1000 },
+	{ separator,     		"^c#4C566A^%s^d^",         		" | ",    			0 },
+	{ cpu_perc,     		"^c#BF616A^CPU %s%% ", 			NULL, 				2000 },
+	{ ram_used,    			"^c#EBCB8B^RAM %s^d^", 			"1000", 			2000 },
+	{ separator,     		"^c#4C566A^%s^d^",         		" | ",    			0 },
+	{ gpu_combined, 		"^c#A3BE8C^%s^d^", 				NULL, 				3000 },
+	{ separator,     		"^c#4C566A^%s^d^",         		" | ",    			0 },
+	{ datetime,    			"^c#ECEFF4^%s^d^", 				"%m-%d %H:%M", 		5000 },
+	{ separator,     		"^c#4C566A^%s^d^",         		" | ",    			0 },
 };
