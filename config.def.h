@@ -67,7 +67,9 @@ static const char unknown_str[] = "n/a";
 #include "slstatus.h"
 
 static const struct arg args[] = {
-	/* function format          argument            interval */
-	{ datetime, "%s",           "%F %T",            0 },
-	{ netspeed_auto, "%s",      NULL,               2000 },
+	/* function				format          argument            interval */	
+	{ netspeed_auto, 		"%s",      		NULL,               2000 },
+	{ gpu_combined, 		"%s", 			NULL, 				3000 },
+	{ datetime,     		"%s", 			"%m-%d %H:%M", 		5000 },
+
 };

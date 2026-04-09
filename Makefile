@@ -12,6 +12,7 @@ COM =\
 	components/datetime\
 	components/disk\
 	components/entropy\
+	components/gpu\
 	components/hostname\
 	components/ip\
 	components/kernel_release\
