@@ -72,7 +72,7 @@ static const struct arg args[] = {
 	/* function				format          				argument            interval */
 	{ netspeed_auto, 		"^c#88C0D0^%s^d^",      		NULL,               1000 },
 	{ separator,     		"^c#4C566A^%s^d^",         		" | ",    			0 },
-	{ cpu_perc,     		"^c#BF616A^CPU %s%% ", 			NULL, 				2000 },
+	{ cpu_perc,     		"^c#EBCB8B^CPU %s%% ", 			NULL, 				2000 },
 	{ ram_used,    			"^c#EBCB8B^RAM %s^d^", 			"1000", 			2000 },
 	{ separator,     		"^c#4C566A^%s^d^",         		" | ",    			0 },
 	{ gpu_combined, 		"^c#A3BE8C^%s^d^", 				NULL, 				3000 },
