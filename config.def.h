@@ -67,9 +67,12 @@ static const char unknown_str[] = "n/a";
 #include "slstatus.h"
 
 static const struct arg args[] = {
-	/* function				format          argument            interval */	
-	{ netspeed_auto, 		"%s",      		NULL,               2000 },
-	{ gpu_combined, 		"%s", 			NULL, 				3000 },
-	{ datetime,     		"%s", 			"%m-%d %H:%M", 		5000 },
+	/* function				format          				argument            interval */	
+	{ netspeed_auto, 		"^c#89B4FA^%s^d^ ",      		NULL,               2000 },
+	{ cpu_perc,     		"^c#F38BA8^CPU %s%% ", 			NULL, 				2000 },
+	{ ram_used,    			"RAM %s^d^ ", 					NULL, 				2000 },
+	{ gpu_combined, 		"^c#94E2D5^%s^d^ ", 			NULL, 				3000 },
+	{ run_command,  		"^c#F9E2AF^ VOL %s%%^d^ ", "wpctl get-volume @DEFAULT_AUDIO_SINK@ | awk '{print int($2 * 100)}'", 1500, },
+	{ datetime,    			"^c#FFFFFF^%s", 				"%m-%d %H:%M^d^ ", 	5000 },
 
 };
