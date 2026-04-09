@@ -1,0 +1,8 @@
+slstatus
+*.o
+*.a
+*.so
+*.dylib
+*.dll
+config.h
+slstatus-*.tar.gz
