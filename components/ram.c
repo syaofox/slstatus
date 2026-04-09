@@ -6,6 +6,7 @@
 
 #if defined(__linux__)
 	#include <stdint.h>
+	#include <stdlib.h>
 
 	const char *
 	ram_free(const char *unused)
@@ -66,9 +67,10 @@
 	}
 
 	const char *
-	ram_used(const char *unused)
+	ram_used(const char *base)
 	{
 		uintmax_t total, free, buffers, cached, used, shmem, sreclaimable;
+		int b;
 		FILE *fp;
 
 		if (!(fp = fopen("/proc/meminfo", "r")))
@@ -85,8 +87,12 @@
 		}
 		fclose(fp);
 
+		b = (base && base[0]) ? atoi(base) : 1024;
+		if (b != 1024 && b != 1000)
+			b = 1024;
+
 		used = total - free - buffers - cached - sreclaimable + shmem;
-		return fmt_human(used * 1024, 1024);
+		return fmt_human(used * 1024, b);
 	}
 #elif defined(__OpenBSD__)
 	#include <stdlib.h>

@@ -73,7 +73,7 @@ static const struct arg args[] = {
 	{ netspeed_auto, 		"^c#89B4FA^%s^d^",      		NULL,               1000 },
 	{ separator,     		"^c#444444^%s^d^",         		" | ",    			0 },
 	{ cpu_perc,     		"^c#F38BA8^CPU %s%% ", 			NULL, 				2000 },
-	{ ram_used,    			"RAM %s^d^", 					NULL, 				2000 },
+	{ ram_used,    			"RAM %s^d^", 					"1000", 			2000 },
 	{ separator,     		"^c#444444^%s^d^",         		" | ",    			0 },
 	{ gpu_combined, 		"^c#94E2D5^%s^d^", 				NULL, 				3000 },
 	{ separator,     		"^c#444444^%s^d^",         		" | ",    			0 },
