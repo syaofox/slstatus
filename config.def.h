@@ -78,5 +78,5 @@ static const struct arg args[] = {
 	{ gpu_combined, 		"^c#94E2D5^%s^d^", 				NULL, 				3000 },
 	{ separator,     		"^c#444444^%s^d^",         		" | ",    			0 },
 	{ datetime,    			"^c#FFFFFF^%s^d^", 				"%m-%d %H:%M", 		5000 },
-
+	{ separator,     		"^c#444444^%s^d^",         		" | ",    			0 },
 };
