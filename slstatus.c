@@ -15,6 +15,7 @@ struct arg {
 	const char *(*func)(const char *);
 	const char *fmt;
 	const char *args;
+	unsigned int refresh_ms;
 };
 
 char buf[1024];
@@ -22,6 +23,31 @@ static volatile sig_atomic_t done;
 static Display *dpy;
 
 #include "config.h"
+
+struct argstate {
+	struct timespec next_update;
+	unsigned int refresh_ms;
+	int initialized;
+	char text[MAXLEN];
+};
+
+static void
+add_ms(struct timespec *ts, unsigned int msec)
+{
+	ts->tv_sec += msec / 1000;
+	ts->tv_nsec += (msec % 1000) * 1E6;
+	if (ts->tv_nsec >= 1E9) {
+		ts->tv_sec++;
+		ts->tv_nsec -= 1E9;
+	}
+}
+
+static int
+timespec_ge(const struct timespec *a, const struct timespec *b)
+{
+	return (a->tv_sec > b->tv_sec) ||
+	       (a->tv_sec == b->tv_sec && a->tv_nsec >= b->tv_nsec);
+}
 
 static void
 terminate(const int signo)
@@ -49,6 +75,7 @@ main(int argc, char *argv[])
 {
 	struct sigaction act;
 	struct timespec start, current, diff, intspec, wait;
+	struct argstate states[LEN(args)];
 	size_t i, len;
 	int sflag, ret;
 	char status[MAXLEN];
@@ -72,6 +99,14 @@ main(int argc, char *argv[])
 	if (argc)
 		usage();
 
+	for (i = 0; i < LEN(args); i++) {
+		states[i].refresh_ms = args[i].refresh_ms ? args[i].refresh_ms : interval;
+		states[i].next_update.tv_sec = 0;
+		states[i].next_update.tv_nsec = 0;
+		states[i].initialized = 0;
+		states[i].text[0] = '\0';
+	}
+
 	memset(&act, 0, sizeof(act));
 	act.sa_handler = terminate;
 	sigaction(SIGINT,  &act, NULL);
@@ -88,11 +123,23 @@ main(int argc, char *argv[])
 
 		status[0] = '\0';
 		for (i = len = 0; i < LEN(args); i++) {
-			if (!(res = args[i].func(args[i].args)))
-				res = unknown_str;
+			if (!states[i].initialized ||
+			    timespec_ge(&start, &states[i].next_update)) {
+				if (!(res = args[i].func(args[i].args)))
+					res = unknown_str;
+
+				if ((ret = esnprintf(states[i].text,
+				                     sizeof(states[i].text),
+				                     args[i].fmt, res)) < 0)
+					break;
+
+				states[i].initialized = 1;
+				states[i].next_update = start;
+				add_ms(&states[i].next_update, states[i].refresh_ms);
+			}
 
 			if ((ret = esnprintf(status + len, sizeof(status) - len,
-			                     args[i].fmt, res)) < 0)
+			                     "%s", states[i].text)) < 0)
 				break;
 
 			len += ret;
