@@ -70,13 +70,13 @@ static const char unknown_str[] = "n/a";
 
 static const struct arg args[] = {
 	/* function				format          				argument            interval */	
-	{ netspeed_auto, 		"^c#89B4FA^%s^d^",      		NULL,               2000 },
-	{ separator,     		"%s",         					"^c#444444^ | ^d^",    0 },
+	{ netspeed_auto, 		"^c#89B4FA^%s^d^",      		NULL,               1000 },
+	{ separator,     		"^c#444444^%s^d^",         		" | ",    			0 },
 	{ cpu_perc,     		"^c#F38BA8^CPU %s%% ", 			NULL, 				2000 },
 	{ ram_used,    			"RAM %s^d^", 					NULL, 				2000 },
-	{ separator,     		"%s",         					"^c#444444^ | ^d^",    0 },
+	{ separator,     		"^c#444444^%s^d^",         		" | ",    			0 },
 	{ gpu_combined, 		"^c#94E2D5^%s^d^", 				NULL, 				3000 },
-	{ separator,     		"%s",         					"^c#444444^ | ^d^",    0 },
-	{ datetime,    			"^c#FFFFFF^%s", 				"%m-%d %H:%M^d^ ", 	5000 },
+	{ separator,     		"^c#444444^%s^d^",         		" | ",    			0 },
+	{ datetime,    			"^c#FFFFFF^%s^d^", 				"%m-%d %H:%M", 		5000 },
 
 };
