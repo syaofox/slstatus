@@ -68,5 +68,6 @@ static const char unknown_str[] = "n/a";
 
 static const struct arg args[] = {
 	/* function format          argument            interval */
-	{ datetime, "%s",           "%F %T",            5000 },
+	{ datetime, "%s",           "%F %T",            0 },
+	{ netspeed_auto, "%s",      NULL,               2000 },
 };
