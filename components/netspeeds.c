@@ -8,6 +8,7 @@
 #if defined(__linux__)
 	#include <stdint.h>
 	#include <string.h>
+	#include <time.h>
 
 	#define NET_RX_BYTES "/sys/class/net/%s/statistics/rx_bytes"
 	#define NET_TX_BYTES "/sys/class/net/%s/statistics/tx_bytes"
@@ -17,7 +18,13 @@
 	{
 		FILE *fp;
 		static char iface[32] = {0};
+		static time_t last_check = 0;
+		static const unsigned int cache_interval = 10;
+		extern const unsigned int interval;
 		char line[128];
+
+		if (iface[0] != '\0' && time(NULL) - last_check < (time_t)(interval * cache_interval / 1000))
+			return iface;
 
 		fp = fopen("/proc/net/route", "r");
 		if (!fp)
@@ -33,6 +40,7 @@
 			if (sscanf(line, "%31s %x %x %x", iface, &dest, &gw, &flags) >= 4) {
 				if (dest == 0 && (flags & 0x02)) {
 					fclose(fp);
+					last_check = time(NULL);
 					return iface;
 				}
 			}
