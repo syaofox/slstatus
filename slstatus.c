@@ -132,7 +132,7 @@ main(int argc, char *argv[])
 					char *type;
 					XrmValue value;
 					snprintf(resource, sizeof(resource), "slstatus.%s", args[i].res_name);
-					if (XrmGetResource(db, resource, "Slstatus.Color", &type, &value))
+					if (XrmGetResource(db, resource, "String", &type, &value))
 						res_colors[i] = strdup(value.addr);
 				}
 			}
