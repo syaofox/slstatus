@@ -65,18 +65,23 @@ static const char unknown_str[] = "n/a";
  *                                                     NULL on OpenBSD/FreeBSD
  * wifi_essid          WiFi ESSID                      interface name (wlan0) 0
  * wifi_perc           WiFi signal in percent          interface name (wlan0) 0
+ *
+ * Xresources color support:
+ *   res_name: Xresources resource name for dynamic color
+ *   Usage: add res_name to args, then set in Xresources:
+ *     slstatus.*.color: #RRGGBB
  */
 #include "slstatus.h"
 
 static const struct arg args[] = {
-	/* function				format          				argument            interval */
-	{ netspeed_auto, 		"^c#88C0D0^%s^d^",      		NULL,               1000 },
-	{ separator,     		"^c#4C566A^%s^d^",         		" | ",    			0 },
-	{ cpu_perc,     		"^c#EBCB8B^CPU %s%% ", 			NULL, 				2000 },
-	{ ram_used,    			"^c#EBCB8B^RAM %s^d^", 			"1000", 			2000 },
-	{ separator,     		"^c#4C566A^%s^d^",         		" | ",    			0 },
-	{ gpu_combined, 		"^c#A3BE8C^%s^d^", 				NULL, 				3000 },
-	{ separator,     		"^c#4C566A^%s^d^",         		" | ",    			0 },
-	{ datetime,    			"^c#ECEFF4^%s^d^", 				"%m-%d %H:%M", 		5000 },
-	{ separator,     		"^c#4C566A^%s^d^",         		" | ",    			0 },
+	/* function			format          				argument            interval	res_name */
+	{ netspeed_auto, 		"%s",      				NULL,               1000,		"net" },
+	{ separator,     		"%s",         				" | ",     			0,		"sep" },
+	{ cpu_perc,     		"CPU %s%% ", 			NULL, 				2000,		"cpu" },
+	{ ram_used,    			"RAM %s^d^", 			"1000", 			2000,		"ram" },
+	{ separator,     		"%s",         				" | ",     			0,		"sep" },
+	{ gpu_combined, 		"%s^d^", 				NULL, 				3000,		"gpu" },
+	{ separator,     		"%s",         				" | ",     			0,		"sep" },
+	{ datetime,    			"%s", 					"%m-%d %H:%M", 		5000,		"time" },
+	{ separator,     		"%s",         				" | ",     			0,		"sep" },
 };
