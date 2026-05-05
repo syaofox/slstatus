@@ -45,6 +45,9 @@ static const char unknown_str[] = "n/a";
  * keymap              layout (variant) of current     NULL                    0
  *                     keymap
  * load_avg            load average                    NULL                    0
+ * netspeed_auto       auto detect iface, select unit   NULL/"Mbps" (bit/s),    0
+ *                                                     "MB/s" (byte/s),
+ *                                                     else human (KiB/s)
  * netspeed_rx         receive network speed           interface name (wlan0) 0
  * netspeed_tx         transfer network speed          interface name (wlan0) 0
  * num_files           number of files in a directory  path                    0
@@ -83,7 +86,7 @@ static const char unknown_str[] = "n/a";
 
 static const struct arg args[] = {
 	/* function			format          				argument            interval	res_name */
-	{ netspeed_auto, 		" %s",      					NULL,               1000,		"net" },
+	{ netspeed_auto, 		" %s",      				"MB/s",               1000,		"net" },
 	{ separator,     		"%s",         				" | ",     			0,			"sep" },
 	{ cpu_perc,     		"CPU %s%% ", 				NULL, 				2000,		"cpu" },
 	{ temp,         		"%s°C ", 					"/sys/class/thermal/thermal_zone0/temp", 2000,	"temp" },

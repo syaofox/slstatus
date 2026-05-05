@@ -123,12 +123,51 @@
 	}
 
 	const char *
-	netspeed_auto(const char *unused)
+	netspeed_auto(const char *mode)
 	{
 		const char *iface = get_default_interface();
+		uintmax_t oldrxbytes, oldtxbytes;
+		static uintmax_t rxbytes, txbytes;
+		extern const unsigned int interval;
+		char path[PATH_MAX], tx_str[16], rx_str[16];
+		uintmax_t tx_diff, rx_diff;
+
 		if (!iface)
 			return NULL;
-		return netspeed_combined(iface);
+
+		oldrxbytes = rxbytes;
+		oldtxbytes = txbytes;
+
+		if (esnprintf(path, sizeof(path), NET_RX_BYTES, iface) < 0)
+			return NULL;
+		if (pscanf(path, "%ju", &rxbytes) != 1)
+			return NULL;
+
+		if (esnprintf(path, sizeof(path), NET_TX_BYTES, iface) < 0)
+			return NULL;
+		if (pscanf(path, "%ju", &txbytes) != 1)
+			return NULL;
+
+		if (oldrxbytes == 0 || oldtxbytes == 0)
+			return NULL;
+
+		tx_diff = txbytes - oldtxbytes;
+		rx_diff = rxbytes - oldrxbytes;
+
+		if (mode == NULL || mode[0] == '\0' || !strcmp(mode, "Mbps"))
+			return bprintf("%.02f/%.02f Mbps",
+			       (double)tx_diff * 8.0 * 1000.0 / interval / 1000000.0,
+			       (double)rx_diff * 8.0 * 1000.0 / interval / 1000000.0);
+		if (!strcmp(mode, "MB/s"))
+			return bprintf("%.02f/%.02f MB/s",
+			       (double)tx_diff * 1000.0 / interval / 1000000.0,
+			       (double)rx_diff * 1000.0 / interval / 1000000.0);
+
+		esnprintf(tx_str, sizeof(tx_str), "%s",
+		          fmt_human(tx_diff * 1000 / interval, 1024));
+		esnprintf(rx_str, sizeof(rx_str), "%s",
+		          fmt_human(rx_diff * 1000 / interval, 1024));
+		return bprintf("%s/%s", tx_str, rx_str);
 	}
 #elif defined(__OpenBSD__) | defined(__FreeBSD__)
 	#include <ifaddrs.h>
