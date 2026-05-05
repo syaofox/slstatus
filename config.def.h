@@ -78,6 +78,7 @@ static const struct arg args[] = {
 	{ netspeed_auto, 		" %s",      					NULL,               1000,		"net" },
 	{ separator,     		"%s",         				" | ",     			0,			"sep" },
 	{ cpu_perc,     		"CPU %s%% ", 				NULL, 				2000,		"cpu" },
+	{ temp,         		"%s°C ", 					"/sys/class/thermal/thermal_zone0/temp", 2000,	"temp" },
 	{ ram_used,    			"RAM %s", 					"1000", 			2000,		"ram" },
 	{ separator,     		"%s",         				" | ",     			0,			"sep" },
 	{ gpu_combined, 		"%s", 						NULL, 				3000,		"gpu" },
