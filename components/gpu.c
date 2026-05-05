@@ -172,7 +172,7 @@
 		if (nvmlDeviceGetTemperature_fn(device, 0, &temp) != NVML_SUCCESS)
 			return NULL;
 
-		return bprintf("GPU %u%% %u°C VRAM %.2fG", utilization.gpu, temp, (double)memory.used / 1024.0 / 1024.0 / 1024.0);
+		return bprintf("GPU %u%% %u°C RAM %.2fG", utilization.gpu, temp, (double)memory.used / 1024.0 / 1024.0 / 1024.0);
 	}
 #else
 	const char *
