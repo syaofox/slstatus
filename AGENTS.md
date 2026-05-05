@@ -1,28 +1,28 @@
 # slstatus Agent Guide
 
-## Build Commands
-- `make clean install` - Build and install (default prefix: `/usr/local`)
-- `make clean` - Remove build artifacts
-- `make dist` - Create distribution tarball
+## Build
+- `make` — build the `slstatus` binary
+- `make clean install` — build and install (PREFIX from `config.mk`, default `/usr/local`)
+- `make clean` — remove build artifacts
+- `make dist` — create distribution tarball
 
 ## Configuration
-- Edit `config.mk` to customize paths (PREFIX, MANPREFIX), X11 paths, and compiler flags
-- Create `config.h` by copying `config.def.h` and editing the `args[]` array to select which components to build
-- The Makefile auto-generates `config.h` from `config.def.h` if it doesn't exist
+- `config.h` is auto-generated from `config.def.h` if missing (Makefile rule). Edit `config.h` after copying to customize which components run. `config.h` is in `.gitignore`.
+- `config.mk` controls install paths, X11 paths, compiler flags (POSIX make, `.POSIX:` set).
+- Recompilation is required for any config change.
 
-## Component Selection
-Components are compiled in based on what's defined in `config.h` `args[]` array. Comment out entries to disable components.
+## Runtime
+- `slstatus` — outputs to `WM_NAME` via X11 (for dwm). `slstatus -s` — print to stdout. `slstatus -1` — single shot to stdout then exit. `slstatus -v` — print version.
+- SIGUSR1 triggers an instant redraw (does not exit). SIGINT/SIGTERM exit cleanly.
+- When a component function returns NULL, `unknown_str` ("n/a") is shown instead.
+- Color support via Xresources: set `res_name` in `args[]`, define `slstatus.<name>.color: #RRGGBB` in Xresources.
 
-## Platform Notes
-- Linux: Requires Xlib (`-lX11`)
-- FreeBSD: Add `-lkvm -lsndio` to LDLIBS
-- OpenBSD: Add `-lsndio` to LDLIBS
+## Key files
+- `slstatus.c` — main loop, arg struct, X11/Xresources integration
+- `slstatus.h` — all component function declarations
+- `arg.h` — suckless ARGBEGIN/ARGEND argument parsing macros
+- `util.c` / `util.h` — shared helpers (`bprintf`, `pscanf`, `lscanf`, `fmt_human`, `esnprintf`)
+- `components/*.c` — individual status functions (OS-specific via `#if defined(__linux__)` / `__OpenBSD__` / `__FreeBSD__`)
 
-## Key Source Files
-- `slstatus.c` - main loop
-- `components/*.c` - individual status components
-- `util.c` / `util.h` - utility functions
-- `arg.h` - argument structure definitions
-
-## No Test Suite
-This project has no automated tests. Manual verification is required.
+## No tests
+Manual verification only.
