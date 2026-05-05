@@ -32,6 +32,8 @@ static const char unknown_str[] = "n/a";
  *                                                     requires NVML)
  * gpu_perc            GPU utilization percent           NULL (Linux only,       0
  *                                                     requires NVML)
+ * gpu_temp            GPU temperature in celsius        NULL (Linux only,       0
+ *                                                     requires NVML)
  * gpu_vram            GPU VRAM usage in GB             NULL (Linux only,       0
  *                                                     requires NVML)
  * hostname            hostname                        NULL                    0

@@ -123,6 +123,20 @@
 	}
 
 	const char *
+	gpu_temp(const char *unused)
+	{
+		unsigned int temp;
+
+		if (!init_nvml())
+			return NULL;
+
+		if (nvmlDeviceGetTemperature_fn(device, 0, &temp) != NVML_SUCCESS)
+			return NULL;
+
+		return bprintf("%u°C", temp);
+	}
+
+	const char *
 	gpu_vram(const char *unused)
 	{
 		nvmlMemory_t memory;
@@ -163,6 +177,12 @@
 #else
 	const char *
 	gpu_perc(const char *unused)
+	{
+		return NULL;
+	}
+
+	const char *
+	gpu_temp(const char *unused)
 	{
 		return NULL;
 	}
