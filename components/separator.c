@@ -5,13 +5,8 @@
 #include "../slstatus.h"
 #include "../util.h"
 
-static const char *cached = NULL;
-
 const char *
 separator(const char *sep)
 {
-	if (!cached)
-		cached = sep ? sep : " | ";
-
-	return cached;
+	return sep ? sep : " | ";
 }
