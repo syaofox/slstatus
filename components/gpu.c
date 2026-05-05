@@ -46,6 +46,7 @@
 	typedef nvmlReturn_t (*nvmlDeviceGetHandleByIndex_t)(unsigned int, nvmlDevice_t*);
 	typedef nvmlReturn_t (*nvmlDeviceGetUtilizationRates_t)(nvmlDevice_t, nvmlUtilization_t*);
 	typedef nvmlReturn_t (*nvmlDeviceGetMemoryInfo_t)(nvmlDevice_t, nvmlMemory_t*);
+	typedef nvmlReturn_t (*nvmlDeviceGetTemperature_t)(nvmlDevice_t, unsigned int, unsigned int*);
 	typedef const char* (*nvmlErrorString_t)(nvmlReturn_t);
 
 	static void *nvml_handle = NULL;
@@ -54,6 +55,7 @@
 	static nvmlDeviceGetHandleByIndex_t nvmlDeviceGetHandleByIndex_fn = NULL;
 	static nvmlDeviceGetUtilizationRates_t nvmlDeviceGetUtilizationRates_fn = NULL;
 	static nvmlDeviceGetMemoryInfo_t nvmlDeviceGetMemoryInfo_fn = NULL;
+	static nvmlDeviceGetTemperature_t nvmlDeviceGetTemperature_fn = NULL;
 	static nvmlDevice_t device = NULL;
 	static int nvml_initialized = 0;
 
@@ -72,9 +74,11 @@
 		nvmlDeviceGetHandleByIndex_fn = (nvmlDeviceGetHandleByIndex_t)dlsym(nvml_handle, "nvmlDeviceGetHandleByIndex");
 		nvmlDeviceGetUtilizationRates_fn = (nvmlDeviceGetUtilizationRates_t)dlsym(nvml_handle, "nvmlDeviceGetUtilizationRates");
 		nvmlDeviceGetMemoryInfo_fn = (nvmlDeviceGetMemoryInfo_t)dlsym(nvml_handle, "nvmlDeviceGetMemoryInfo");
+		nvmlDeviceGetTemperature_fn = (nvmlDeviceGetTemperature_t)dlsym(nvml_handle, "nvmlDeviceGetTemperature");
 
 		if (!nvmlInit_fn || !nvmlShutdown_fn || !nvmlDeviceGetHandleByIndex_fn ||
-		    !nvmlDeviceGetUtilizationRates_fn || !nvmlDeviceGetMemoryInfo_fn) {
+		    !nvmlDeviceGetUtilizationRates_fn || !nvmlDeviceGetMemoryInfo_fn ||
+		    !nvmlDeviceGetTemperature_fn) {
 			dlclose(nvml_handle);
 			nvml_handle = NULL;
 			return 0;
@@ -105,12 +109,42 @@
 	}
 
 	const char *
+	gpu_perc(const char *unused)
+	{
+		nvmlUtilization_t utilization;
+
+		if (!init_nvml())
+			return NULL;
+
+		if (nvmlDeviceGetUtilizationRates_fn(device, &utilization) != NVML_SUCCESS)
+			return NULL;
+
+		return bprintf("%u%%", utilization.gpu);
+	}
+
+	const char *
+	gpu_vram(const char *unused)
+	{
+		nvmlMemory_t memory;
+		double vram_gb;
+
+		if (!init_nvml())
+			return NULL;
+
+		if (nvmlDeviceGetMemoryInfo_fn(device, &memory) != NVML_SUCCESS)
+			return NULL;
+
+		vram_gb = (double)memory.used / 1024.0 / 1024.0 / 1024.0;
+
+		return bprintf("%.2fG", vram_gb);
+	}
+
+	const char *
 	gpu_combined(const char *unused)
 	{
 		nvmlUtilization_t utilization;
 		nvmlMemory_t memory;
-		unsigned int gpu_util;
-		double vram_gb;
+		unsigned int temp;
 
 		if (!init_nvml())
 			return NULL;
@@ -121,12 +155,24 @@
 		if (nvmlDeviceGetMemoryInfo_fn(device, &memory) != NVML_SUCCESS)
 			return NULL;
 
-		gpu_util = utilization.gpu;
-		vram_gb = (double)memory.used / 1024.0 / 1024.0 / 1024.0;
+		if (nvmlDeviceGetTemperature_fn(device, 0, &temp) != NVML_SUCCESS)
+			return NULL;
 
-		return bprintf("GPU %u%% VRAM %.2fG", gpu_util, vram_gb);
+		return bprintf("GPU %u%% %u°C VRAM %.2fG", utilization.gpu, temp, (double)memory.used / 1024.0 / 1024.0 / 1024.0);
 	}
 #else
+	const char *
+	gpu_perc(const char *unused)
+	{
+		return NULL;
+	}
+
+	const char *
+	gpu_vram(const char *unused)
+	{
+		return NULL;
+	}
+
 	const char *
 	gpu_combined(const char *unused)
 	{

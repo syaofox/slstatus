@@ -27,6 +27,8 @@ const char *disk_used(const char *path);
 const char *entropy(const char *unused);
 
 /* gpu */
+const char *gpu_perc(const char *unused);
+const char *gpu_vram(const char *unused);
 const char *gpu_combined(const char *unused);
 
 /* hostname */

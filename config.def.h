@@ -28,6 +28,12 @@ static const char unknown_str[] = "n/a";
  * disk_used           used disk space in GB           mountpoint path (/)     0
  * entropy             available entropy               NULL                    0
  * gid                 GID of current user             NULL                    0
+ * gpu_combined        GPU util, temp and VRAM usage    NULL (Linux only,       0
+ *                                                     requires NVML)
+ * gpu_perc            GPU utilization percent           NULL (Linux only,       0
+ *                                                     requires NVML)
+ * gpu_vram            GPU VRAM usage in GB             NULL (Linux only,       0
+ *                                                     requires NVML)
  * hostname            hostname                        NULL                    0
  * ipv4                IPv4 address                    interface name (eth0)   0
  * ipv6                IPv6 address                    interface name (eth0)   0
