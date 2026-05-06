@@ -6,17 +6,46 @@
 
 
 #if defined(__linux__)
+	#include <dirent.h>
 	#include <stdint.h>
+	#include <string.h>
+	#include <unistd.h>
 
 	const char *
 	temp(const char *file)
 	{
 		uintmax_t temp;
 
-		if (pscanf(file, "%ju", &temp) != 1)
+		if (file && access(file, F_OK) == 0) {
+			if (pscanf(file, "%ju", &temp) != 1)
+				return NULL;
+			return bprintf("%ju", temp / 1000);
+		}
+
+		/* auto-detect thermal zone */
+		DIR *dp;
+		struct dirent *entry;
+		char path[256];
+
+		if (!(dp = opendir("/sys/class/thermal")))
 			return NULL;
 
-		return bprintf("%ju", temp / 1000);
+		while ((entry = readdir(dp))) {
+			if (strncmp(entry->d_name, "thermal_zone", 12) != 0)
+				continue;
+			if (esnprintf(path, sizeof(path),
+			              "/sys/class/thermal/%s/temp",
+			              entry->d_name) < 0)
+				continue;
+			if (access(path, F_OK) == 0 &&
+			    pscanf(path, "%ju", &temp) == 1) {
+				closedir(dp);
+				return bprintf("%ju", temp / 1000);
+			}
+		}
+
+		closedir(dp);
+		return NULL;
 	}
 #elif defined(__OpenBSD__)
 	#include <stdio.h>
