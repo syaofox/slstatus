@@ -1,11 +1,13 @@
 /* See LICENSE file for copyright and license details. */
 #include <errno.h>
+#include <poll.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #include <X11/Xlib.h>
+#include <X11/XKBlib.h>
 #include <X11/Xresource.h>
 
 #include "arg.h"
@@ -23,6 +25,8 @@ struct arg {
 char buf[1024];
 static volatile sig_atomic_t done;
 static Display *dpy;
+static int xkb_available;
+static int xkb_first_event;
 
 #include "config.h"
 
@@ -30,6 +34,7 @@ struct argstate {
 	struct timespec next_update;
 	unsigned int refresh_ms;
 	int initialized;
+	int dirty;
 	char text[MAXLEN];
 };
 
@@ -108,6 +113,7 @@ main(int argc, char *argv[])
 		states[i].next_update.tv_sec = 0;
 		states[i].next_update.tv_nsec = 0;
 		states[i].initialized = 0;
+		states[i].dirty = 0;
 		states[i].text[0] = '\0';
 	}
 
@@ -138,6 +144,13 @@ main(int argc, char *argv[])
 			}
 			XrmDestroyDatabase(db);
 		}
+
+		xkb_available = XkbQueryExtension(dpy, NULL, &xkb_first_event,
+		                                  NULL, NULL, NULL);
+		if (xkb_available)
+			XkbSelectEvents(dpy, XkbUseCoreKbd,
+			                XkbIndicatorStateNotifyMask,
+			                XkbIndicatorStateNotifyMask);
 	}
 
 	do {
@@ -146,8 +159,9 @@ main(int argc, char *argv[])
 
 		status[0] = '\0';
 		for (i = len = 0; i < LEN(args); i++) {
-			if (!states[i].initialized ||
+			if (!states[i].initialized || states[i].dirty ||
 			    timespec_ge(&start, &states[i].next_update)) {
+				states[i].dirty = 0;
 				if (!(res = args[i].func(args[i].args)))
 					res = unknown_str;
 
@@ -194,10 +208,43 @@ main(int argc, char *argv[])
 			intspec.tv_nsec = (interval % 1000) * 1E6;
 			difftimespec(&wait, &intspec, &diff);
 
-			if (wait.tv_sec >= 0 &&
-			    nanosleep(&wait, NULL) < 0 &&
-			    errno != EINTR)
+			if (wait.tv_sec >= 0) {
+				if (dpy) {
+					int poll_timeout = wait.tv_sec * 1000 +
+					                   wait.tv_nsec / 1000000;
+					struct pollfd pfd;
+
+					pfd.fd = ConnectionNumber(dpy);
+					pfd.events = POLLIN;
+					if (poll(&pfd, 1, poll_timeout) < 0 &&
+					    errno != EINTR)
+						die("poll:");
+
+					if (pfd.revents & POLLIN) {
+						XEvent ev;
+
+						while (XPending(dpy)) {
+							XNextEvent(dpy, &ev);
+							if (xkb_available &&
+							    ev.type == xkb_first_event) {
+								XkbAnyEvent *xkbev =
+									(XkbAnyEvent *)&ev;
+								if (xkbev->xkb_type ==
+								    XkbIndicatorStateNotify) {
+									size_t j;
+									for (j = 0; j < LEN(args); j++)
+										if (args[j].func ==
+										    keyboard_indicators)
+											states[j].dirty = 1;
+								}
+							}
+						}
+					}
+				} else if (nanosleep(&wait, NULL) < 0 &&
+				           errno != EINTR) {
 					die("nanosleep:");
+				}
+			}
 		}
 	} while (!done);
 

@@ -14,21 +14,20 @@
  * if the corresponding indicator is on.  Otherwise, the letter is always
  * included, lowercase when off and uppercase when on.
  */
-const char *
+	const char *
 keyboard_indicators(const char *fmt)
 {
-	Display *dpy;
+	static Display *dpy = NULL;
 	XKeyboardState state;
 	size_t fmtlen, i, n;
 	int togglecase, isset;
 	char key;
 
-	if (!(dpy = XOpenDisplay(NULL))) {
+	if (!dpy && !(dpy = XOpenDisplay(NULL))) {
 		warn("XOpenDisplay: Failed to open display");
 		return NULL;
 	}
 	XGetKeyboardControl(dpy, &state);
-	XCloseDisplay(dpy);
 
 	fmtlen = strnlen(fmt, 4);
 	for (i = n = 0; i < fmtlen; i++) {
