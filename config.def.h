@@ -96,7 +96,7 @@ static const struct arg args[] = {
 	{ separator,     		"%s",         				" | ",     			0,			"sep" },
 	{ swap_perc,     		"SWAP %s%%", 				NULL, 				2000,		"swap" },
 	{ separator,     		"%s",         				" | ",     			0,			"sep" },
-	{ datetime,    			"%s", 						"%m-%d %H:%M", 		5000,		"time" },
+	{ datetime,    			"%s", 						"%a %m-%d %H:%M", 	5000,		"time" },
 	{ separator,     		"%s",         				" | ",     			0,			"sep" },
 	{ keyboard_indicators, 	"%s", 						"C?N?", 			0,			"kbd" },
 	{ separator,     		"%s",         				" | ",     			0,			"sep" },

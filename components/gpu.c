@@ -69,12 +69,12 @@
 		if (!nvml_handle)
 			return 0;
 
-		nvmlInit_fn = (nvmlInit_t)dlsym(nvml_handle, "nvmlInit");
-		nvmlShutdown_fn = (nvmlShutdown_t)dlsym(nvml_handle, "nvmlShutdown");
-		nvmlDeviceGetHandleByIndex_fn = (nvmlDeviceGetHandleByIndex_t)dlsym(nvml_handle, "nvmlDeviceGetHandleByIndex");
-		nvmlDeviceGetUtilizationRates_fn = (nvmlDeviceGetUtilizationRates_t)dlsym(nvml_handle, "nvmlDeviceGetUtilizationRates");
-		nvmlDeviceGetMemoryInfo_fn = (nvmlDeviceGetMemoryInfo_t)dlsym(nvml_handle, "nvmlDeviceGetMemoryInfo");
-		nvmlDeviceGetTemperature_fn = (nvmlDeviceGetTemperature_t)dlsym(nvml_handle, "nvmlDeviceGetTemperature");
+		*(void **)(&nvmlInit_fn) = dlsym(nvml_handle, "nvmlInit");
+		*(void **)(&nvmlShutdown_fn) = dlsym(nvml_handle, "nvmlShutdown");
+		*(void **)(&nvmlDeviceGetHandleByIndex_fn) = dlsym(nvml_handle, "nvmlDeviceGetHandleByIndex");
+		*(void **)(&nvmlDeviceGetUtilizationRates_fn) = dlsym(nvml_handle, "nvmlDeviceGetUtilizationRates");
+		*(void **)(&nvmlDeviceGetMemoryInfo_fn) = dlsym(nvml_handle, "nvmlDeviceGetMemoryInfo");
+		*(void **)(&nvmlDeviceGetTemperature_fn) = dlsym(nvml_handle, "nvmlDeviceGetTemperature");
 
 		if (!nvmlInit_fn || !nvmlShutdown_fn || !nvmlDeviceGetHandleByIndex_fn ||
 		    !nvmlDeviceGetUtilizationRates_fn || !nvmlDeviceGetMemoryInfo_fn ||
